@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "sportsmate",
-    "slug": "sportsmate",
+    "slug": "sportsmates",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -25,6 +25,12 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "68530852-3e05-49f7-b960-c145dc5594f8"
+      }
+    },
+    "owner": "willy161"
   }
 }
