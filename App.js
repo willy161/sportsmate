@@ -8,11 +8,14 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import LandingScreen from './components/auth/Landing';
 import RegisterScreen from './components/auth/Register';
+import LoginScreen from './components/auth/Login';
 import MainScreen, { Main } from './components/Main';
 import { Provider } from 'react-redux';
-import { createStore, applyMiddleware } from 'redux';
+import { legacy_createStore as createStore, applyMiddleware} from 'redux';
 import rootReducer from './redux/reducers';
 import thunk from 'redux-thunk';
+import AddScreen from './components/main/Add';
+import SaveScreen from './components/main/Save';
 const store = createStore(rootReducer, applyMiddleware(thunk));
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 
@@ -47,7 +50,7 @@ export class App extends Component {
         if(!loaded) {
             return(
                 <View>
-                    <Text style ={{ flex: 1, justifyContent: 'center' }}>Loading</Text>
+                    <Text style ={{ flex: 1, justifyContent: 'center' }}>Loadingg</Text>
                 </View>
             )
 
@@ -58,13 +61,20 @@ export class App extends Component {
             <Stack.Navigator initialRouteName="Landing">
                 <Stack.Screen name="Landing" component={LandingScreen} options={{ headerShown: false }}/> 
                 <Stack.Screen name="Register" component={RegisterScreen} />
+                <Stack.Screen name="Login" component={LoginScreen} />
             </Stack.Navigator>
         </NavigationContainer>
     );
         }
         return(
             <Provider store={store}>
-                <MainScreen/>
+                <NavigationContainer>
+                 <Stack.Navigator initialRouteName="Main">
+                <Stack.Screen name="Main" component={MainScreen} options={{ headerShown: false }}/> 
+                <Stack.Screen name="Add" component={AddScreen} navigation={this.props.navigation}/> 
+                <Stack.Screen name="Save" component={SaveScreen} navigation={this.props.navigation}/> 
+            </Stack.Navigator>
+            </NavigationContainer>
             </Provider>
         )
   }
