@@ -2,6 +2,7 @@ import { USER_STATE_CHANGE, USER_POSTS_STATE_CHANGE } from "../constants/index";
 import { getFirestore, doc, onSnapshot, collection, query, orderBy } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 import { app } from "../../components/auth/firebaseConfig";
+import * as Location from 'expo-location';
 
 export function fetchUser() {
   return ((dispatch) => {
@@ -22,6 +23,29 @@ export function fetchUser() {
     });
   });
 }
+export const getUserLocation = async () => {
+  try {
+    // Request permission to access the user's location
+    const { status } = await Location.requestForegroundPermissionsAsync();
+
+    if (status !== 'granted') {
+      console.error('Permission to access location was denied');
+      return;
+    }
+
+    // Get the user's current location
+    const location = await Location.getCurrentPositionAsync({});
+    const { latitude, longitude } = location.coords;
+
+    // Return the location data
+    return {
+      latitude,
+      longitude,
+    };
+  } catch (error) {
+    console.error('Error getting user location:', error);
+  }
+};
 
 export function fetchUserPosts() {
   return (dispatch) => {

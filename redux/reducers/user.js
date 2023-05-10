@@ -1,4 +1,4 @@
-import { USER_STATE_CHANGE, USER_POSTS_STATE_CHANGE } from "../constants/index"
+import { USER_STATE_CHANGE, USER_POSTS_STATE_CHANGE, USER_LOCATION_STATE_CHANGE } from "../constants/index"
 const initialState = {
     currentUser: null,
     posts: []
@@ -7,6 +7,11 @@ const initialState = {
 export const user = (state = initialState, action) => {
     switch(action.type)
     {
+        case USER_LOCATION_STATE_CHANGE:
+            return {
+                ...state,
+                location: action.location
+            }
         case USER_STATE_CHANGE:
             return {
                 ...state,

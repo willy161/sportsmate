@@ -7,8 +7,9 @@ import { fetchUser, fetchUserPosts } from '../redux/actions/index';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import FeedScreen from './main/Feed';
-import SearchScreen from './main/Search';
+import SearchScreen from './main/Search1';
 import ProfileScreen from './main/Profile';
+import ChatsScreen from './main/Chats';
 
 const EmptyScreen = () => {
   return (null);
@@ -57,6 +58,19 @@ export class Main extends Component {
             <MaterialCommunityIcons name="account-circle" color={color} size={26} />
           )
         }}/>
+        <Tab.Screen name="Chats" component={ChatsScreen}
+         listeners={({ navigation }) => ({
+          tabPress: event => {
+              console.log("Chats button pressed");
+              event.preventDefault();
+              navigation.navigate("Chats");
+          }
+      })}
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <MaterialCommunityIcons name="message" color={color} size={26} />
+          )
+        }}/>
         <Tab.Screen name="AddContainer" component={EmptyScreen} 
         listeners={({ navigation }) => ({
             tabPress: event => {
@@ -73,7 +87,7 @@ export class Main extends Component {
       </Tab.Navigator>
     );
   }
-  }
+}
 
 const mapStateToProps = (store) =>({
   currentUser: store.userState.currentUser
