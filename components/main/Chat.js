@@ -1,15 +1,29 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, TextInput, Button, StyleSheet, Keyboard, Dimensions } from 'react-native';
 import { getAuth } from 'firebase/auth';
-import { getFirestore, collection, query, where, orderBy, limit, addDoc } from 'firebase/firestore';
+import { getFirestore, collection, query, where, orderBy, limit, addDoc, getDocs, doc, getDoc } from 'firebase/firestore';
 import { useCollectionData } from 'react-firebase-hooks/firestore';
 import { app } from '../auth/firebaseConfig';
 
+function ChatMessage({ message, currentUid }) {
+  const { text, uid, userName } = message;
+  const messageAlignment = uid === currentUid ? 'flex-end' : 'flex-start';
+  const bubbleColor = uid === currentUid ? '#147efb' : '#eee';
+
+  return (
+    <View style={[styles.messageBubble, { alignSelf: messageAlignment, backgroundColor: bubbleColor }]}>
+      <Text style={styles.username}>{userName}</Text>
+      <Text>{text}</Text>
+    </View>
+  );
+}
+
 export default function Chat({ route }) {
   const [inputText, setInputText] = useState('');
-  const [usernames, setUsernames] = useState({});
+  const [currentUsername, setCurrentUsername] = useState('');
+  const [otherUsername, setOtherUsername] = useState('');
   const [keyboardHeight, setKeyboardHeight] = useState(0);
-  const uid = route.params.uid;// the id of the other user
+  const uid = route.params.uid; // the id of the other user
   const auth = getAuth(app);
   const db = getFirestore(app);
   const messageRef = collection(db, 'messages');
@@ -41,15 +55,18 @@ export default function Chat({ route }) {
   }, []);
 
   const fetchUsernames = async () => {
-    const docRef = collection(db, 'users');
-    const docSnap = await getDocs(docRef);
+    const currentUserDocRef = doc(db, 'users', auth.currentUser.uid);
+    const currentUserDocSnap = await getDoc(currentUserDocRef);
+  
+    if (currentUserDocSnap.exists()) {
+      setCurrentUsername(currentUserDocSnap.data().name);
+    }
 
-    if (!docSnap.empty) {
-      let usernames = {};
-      docSnap.forEach(doc => {
-        usernames[doc.id] = doc.data().name;
-      });
-      setUsernames(usernames);
+    const otherUserDocRef = doc(db, 'users', uid);
+    const otherUserDocSnap = await getDoc(otherUserDocRef);
+  
+    if (otherUserDocSnap.exists()) {
+      setOtherUsername(otherUserDocSnap.data().name);
     }
   };
 
@@ -58,18 +75,20 @@ export default function Chat({ route }) {
       uid: auth.currentUser.uid,
       text: inputText,
       createdAt: Date.now(),
-      userCombo: userCombo
+      userCombo: userCombo,
+      userName: currentUsername // Added this line
     });
     setInputText(''); // Clear the input field
   };
 
   return (
     <View style={[styles.container, { marginBottom: keyboardHeight }]}>
+      <Text style={styles.header}>{otherUsername}</Text>
       <FlatList
         style={styles.messageList}
         data={messages}
-        inverted={true} 
-        renderItem={({ item }) => <ChatMessage message={item} currentUid={auth.currentUser.uid} usernames={usernames} />}
+        inverted={false} 
+        renderItem={({ item }) => <ChatMessage message={item} currentUid={auth.currentUser.uid} />}
         keyExtractor={item => item.id}
       />
       <View style={styles.inputContainer}>
@@ -85,23 +104,16 @@ export default function Chat({ route }) {
   );
 }
 
-function ChatMessage({ message, currentUid, usernames }) {
-  const { text, uid } = message;
-  const messageAlignment = uid === currentUid ? 'flex-end' : 'flex-start';
-  const username = usernames[uid];
-
-  return (
-    <View style={[styles.messageBubble, { alignSelf: messageAlignment }]}>
-      <Text>{username}</Text>
-      <Text>{text}</Text>
-    </View>
-  );
-}
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 10,
+  },
+  header: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: 10,
   },
   messageList: {
     flex: 1,
@@ -119,9 +131,13 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   messageBubble: {
-    backgroundColor: '#eee',
     borderRadius: 10,
     padding: 10,
     marginVertical: 5,
   },
+  username: {
+    color: '#888',
+    fontWeight: 'bold',
+  },
 });
+

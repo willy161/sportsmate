@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Text, View, Button, TextInput } from 'react-native';
+import { Text, View, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import { app } from './firebaseConfig';
 import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
 import { getFirestore, doc, setDoc } from "firebase/firestore";
@@ -34,27 +34,65 @@ export class Register extends Component {
     
     render() {
         return (
-          <View>
+          <View style={styles.container}>
+            <Text style={styles.headerText}>Register</Text>
             <TextInput 
+            style={styles.inputField}
             placeholder="name"
             onChangeText={(name) => this.setState({name})}
             />
             <TextInput 
+            style={styles.inputField}
             placeholder="email"
             onChangeText={(email) => this.setState({email})}
             />
             <TextInput 
-            placeholder="password"
+            style={styles.inputField}
             secureTextEntry={true}
+            placeholder="password"
             onChangeText={(password) => this.setState({password})}
             />
-            <Button
-                onPress={() => this.onSignUp()}
-                title="Sign Up"
-            />
+            <TouchableOpacity style={styles.buttonContainer} onPress={() => this.onSignUp()}>
+              <Text style={styles.buttonText}>Sign Up</Text>
+            </TouchableOpacity>
           </View>
         )
     }
-} // Add the missing closing brace here
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 20, 
+    backgroundColor: '#f5f5f5',
+    justifyContent: 'center',
+  },
+  headerText: {
+    fontSize: 30,
+    fontWeight: 'bold',
+    color: '#333',
+    textAlign: 'center',
+    marginBottom: 40 
+  },
+  inputField: {
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 4,
+    padding: 10,
+    marginBottom: 10,
+    fontSize: 16
+  },
+  buttonContainer: {
+    backgroundColor: '#841584',
+    paddingVertical: 10,
+    borderRadius: 5,
+    alignItems: 'center'
+  },
+  buttonText: {
+    color: '#ffffff',
+    fontSize: 16,
+    fontWeight: 'bold'
+  }
+});
 
 export default Register;

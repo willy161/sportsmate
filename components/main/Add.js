@@ -1,86 +1,63 @@
-import React from 'react'
-import { Camera, CameraType } from 'expo-camera';
-import { useState, useEffect } from 'react';
-import { Button, StyleSheet, Text, View, Image, Platform } from 'react-native';
-import * as ImagePicker from 'expo-image-picker';
+import React, { useState } from 'react';
+import { Button, TextInput, View, StyleSheet } from 'react-native';
+import { app } from '../auth/firebaseConfig';
+import { getFirestore, collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { getAuth } from 'firebase/auth';
+import { getUserLocation } from '../../redux/actions/index';
 
-export default function Add( {navigation} ) {
-  const [type, setType] = useState(CameraType.back);
-  const [camera, setCamera] = useState(null);
-  const [image, setImage] = useState(null);
-  const [permission, requestPermission] = Camera.useCameraPermissions();
-  const pickImage = async () => {
-    // No permissions request is necessary for launching the image library
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [1,1],
-      quality: 1,
+export default function Add() {
+  const [caption, setCaption] = useState('');
+  const [participants, setParticipants] = useState('');
+
+  const onAddPost = async () => {
+    const location = await getUserLocation();
+
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+    const postRef = collection(db, 'posts', auth.currentUser.uid, 'userPosts');
+
+    await addDoc(postRef, {
+      caption,
+      participants: parseInt(participants),
+      location,
+      creation: serverTimestamp(),
     });
-    console.log(result);
-    if (!result.cancelled) {
-        setImage(result.uri);
-    }
-    }
-  const takePicture = async () => {
-    if (camera) {
-      const data = await camera.takePictureAsync(null);
-      console.log(data.uri);
-      setImage(data.uri);
-    }
-    }
 
-  if (!permission)
-  {
-    return <View />;
-  }
-
-  if (!permission.granted)
-  {
-    return (
-      <View>
-        <Text>Permission not granted</Text>
-        <Button onPress={requestPermission} title="Request" />
-      </View>
-    );
-  } 
-
-  function toggleCameraType() {
-    setType(current => (current === CameraType.back ? CameraType.front : CameraType.back));
-  }
+    // clear the fields
+    setCaption('');
+    setParticipants('');
+  };
 
   return (
-    <View style={{ flex: 1 }}>
-        <View style={styles.cameraContainer}>
-      <Camera 
-        ref={ref => setCamera(ref)}
-        style={styles.fixedRatio} 
-        type={type} 
-        ratio={'1:1'} />
-        </View>
-          <Button title="Flip Image"style={{
-            flex: 0.1,
-            alignSelf: 'flex-end',
-            alignItems: 'center',
-          }} onPress={toggleCameraType}>
-          </Button>
-          <Button title="Take Picture" onPress={() => takePicture()}/>
-          <Button title="Pick an image from camera roll" onPress={() => pickImage()} />
-          <Button title="Save" onPress={() => navigation.navigate('Save', {image})}/>
-          {image && <Image source={{ uri: image }} style={{ flex: 1 }}/>}
-        
+    <View style={styles.container}>
+      <TextInput
+        placeholder="Caption"
+        style={styles.input}
+        value={caption}
+        onChangeText={setCaption}
+      />
+      <TextInput
+        placeholder="Number of participants"
+        style={styles.input}
+        value={participants}
+        onChangeText={setParticipants}
+        keyboardType="numeric"
+      />
+      <Button title="Add Post" onPress={onAddPost} />
     </View>
   );
 }
+
 const styles = StyleSheet.create({
-    cameraContainer: {
-        flex: 1,
-        flexDirection: 'row',
-    },
-    fixedRatio: {
-        flex: 1,
-        aspectRatio: 1,
-  }
-}
-  );
-  
+  container: {
+    flex: 1,
+    padding: 10,
+  },
+  input: {
+    height: 40,
+    borderColor: 'gray',
+    borderWidth: 1,
+    paddingLeft: 10,
+    marginBottom: 10,
+  },
+});
