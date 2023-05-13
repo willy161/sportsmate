@@ -1,11 +1,10 @@
-import { useEffect, useState } from 'react';
-import { View, Text, FlatList, TouchableOpacity, Button, StyleSheet, Modal, Alert } from 'react-native';
-import { getFirestore, collection, getDocs, orderBy, query, where } from 'firebase/firestore';
+import { View, Text, FlatList, TouchableOpacity, Button, StyleSheet, Modal} from 'react-native';
+import { getFirestore, collection, getDocs, orderBy, query } from 'firebase/firestore';
+import {Picker} from '@react-native-picker/picker';
 import { app } from '../auth/firebaseConfig';
 import { useIsFocused } from '@react-navigation/native';
 import { getUserLocation, calculateDistance } from '../../redux/actions/index';
-import NetInfo from '@react-native-community/netinfo';
-import {Picker} from '@react-native-picker/picker';
+import { useEffect, useState } from 'react';
 
 export default function Feed({ navigation }) {
   const [posts, setPosts] = useState([]);
@@ -21,38 +20,36 @@ export default function Feed({ navigation }) {
 
       const db = getFirestore(app);
       const postRef = collection(db, 'posts');
-      const postQuery = query(postRef, orderBy('creation', 'desc'));
+      const postSnap = await getDocs(postRef);
 
-      const postSnap = await getDocs(postQuery);
       let allPosts = [];
+      for (const doc of postSnap.docs) {
+        const userPostsRef = collection(postRef, doc.id, 'userPosts');
+        const userPostsSnap = await getDocs(userPostsRef);
+        userPostsSnap.docs.forEach(post => {
+          const postData = post.data();
+          const postDistance = calculateDistance(
+            postData.location.latitude,
+            postData.location.longitude,
+            location.latitude,
+            location.longitude
+          );
+          if (postDistance <= distance) {
+            allPosts.push({
+              id: post.id,
+              uid: doc.id,
+              ...postData,
+              distance: postDistance,
+            });
+          }
+        });
+      }
 
-      postSnap.docs.forEach(doc => {
-        const postData = doc.data();
-        const postDistance = calculateDistance(
-          postData.location.latitude,
-          postData.location.longitude,
-          location.latitude,
-          location.longitude
-        );
-        if (postDistance <= distance) {
-          allPosts.push({
-            id: doc.id,
-            ...postData,
-            distance: postDistance,
-          });
-        }
-      });
-
+      allPosts.sort((a, b) => b.createdAt - a.createdAt); // sort in descending order
       setPosts(allPosts);
     };
 
-    NetInfo.fetch().then(state => {
-      if (state.isConnected) {
-        fetchPosts();
-      } else {
-        Alert.alert('No Internet Connection', 'Please check your internet connection and try again.');
-      }
-    });
+    fetchPosts();
   }, [isFocused, distance]);
 
   const renderItem = ({ item }) => (
@@ -105,7 +102,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   headerTitle: {
-    fontSize: 21,
+    fontSize: 20,
     fontWeight: 'bold',
   },
   postContainer: {
@@ -116,4 +113,3 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
 });
-

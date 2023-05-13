@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, TextInput, Button, StyleSheet, Keyboard, Dimensions } from 'react-native';
+import { View, Text, FlatList, TextInput, Button, StyleSheet, Keyboard, Dimensions, Image } from 'react-native';
 import { getAuth } from 'firebase/auth';
 import { getFirestore, collection, query, where, orderBy, limit, addDoc, getDocs, doc, getDoc } from 'firebase/firestore';
 import { useCollectionData } from 'react-firebase-hooks/firestore';
 import { app } from '../auth/firebaseConfig';
+import { useEffect, useState } from 'react';
 
 function ChatMessage({ message, currentUid }) {
   const { text, uid, userName } = message;
@@ -22,6 +22,7 @@ export default function Chat({ route }) {
   const [inputText, setInputText] = useState('');
   const [currentUsername, setCurrentUsername] = useState('');
   const [otherUsername, setOtherUsername] = useState('');
+  const [otherUserPicture, setOtherUserPicture] = useState('');
   const [keyboardHeight, setKeyboardHeight] = useState(0);
   const uid = route.params.uid; // the id of the other user
   const auth = getAuth(app);
@@ -67,6 +68,7 @@ export default function Chat({ route }) {
   
     if (otherUserDocSnap.exists()) {
       setOtherUsername(otherUserDocSnap.data().name);
+      setOtherUserPicture(otherUserDocSnap.data().picture || "https://firebasestorage.googleapis.com/v0/b/sportsmate-21006.appspot.com/o/profile_pictures%2Ff10ff70a7155e5ab666bcdd1b45b726d.jpg?alt=media&token=68093b3e-70e8-4c96-b9ae-d5305f9982ce");
     }
   };
 
@@ -76,19 +78,22 @@ export default function Chat({ route }) {
       text: inputText,
       createdAt: Date.now(),
       userCombo: userCombo,
-      userName: currentUsername // Added this line
+      userName: currentUsername
     });
     setInputText(''); // Clear the input field
   };
 
   return (
     <View style={[styles.container, { marginBottom: keyboardHeight }]}>
-      <Text style={styles.header}>{otherUsername}</Text>
+      <View style={styles.header}>
+        <Image style={styles.profilePic} source={{ uri: otherUserPicture }} />
+        <Text>{otherUsername}</Text>
+      </View>
       <FlatList
         style={styles.messageList}
         data={messages}
         inverted={false} 
-        renderItem={({ item }) => <ChatMessage message={item} currentUid={auth.currentUser.uid} />}
+        renderItem={({ item }) => <ChatMessage key={item.id} message={item} currentUid={auth.currentUser.uid} />}
         keyExtractor={item => item.id}
       />
       <View style={styles.inputContainer}>
@@ -110,10 +115,13 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   header: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    textAlign: 'center',
+    alignItems: 'center',
     marginBottom: 10,
+  },
+  profilePic: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
   },
   messageList: {
     flex: 1,
@@ -140,4 +148,3 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 });
-

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, Button, StyleSheet } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
 import { getAuth } from 'firebase/auth';
 import { getFirestore, collection, getDocs, doc, getDoc, query, orderBy } from 'firebase/firestore';
 import { app } from '../auth/firebaseConfig';
@@ -51,7 +51,9 @@ export default function Chats({ navigation }) {
             return (
               <View style={styles.chatContainer}>
                 <Text style={styles.chatText}>{item.userName || 'No users'}</Text>
-                <Button title="Open Chat" onPress={() => navigation.navigate('Chat', { uid: item.uid })} />
+                <TouchableOpacity style={styles.opacityButton} onPress={() => navigation.navigate('Chat', { uid: otherUid })}>
+                  <Text style={styles.buttonText}>Open Chat</Text>
+                </TouchableOpacity>
               </View>
             );
           }}
@@ -83,4 +85,18 @@ const styles = StyleSheet.create({
   chatText: {
     fontSize: 18,
   },
+  opacityButton: {
+    padding: 10,
+    marginBottom: 10,
+    backgroundColor: '#841584',
+    paddingVertical: 10,
+    borderRadius: 5,
+    alignItems: 'center'
+  },
+  buttonText: {
+    color: '#ffffff',
+    fontSize: 16,
+    fontWeight: 'bold'
+  },
 });
+

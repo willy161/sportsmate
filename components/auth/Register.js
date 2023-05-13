@@ -13,24 +13,24 @@ export class Register extends Component {
             name : ''
         }
         this.onSignUp = this.onSignUp.bind(this)
-    }
+    }a
     async onSignUp() {
-        const { email, password, name } = this.state;
-        const auth = getAuth(app);
-        try {
-          const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-          const user = userCredential.user;
-  
-          // Save user data to Firestore
-          const firestore = getFirestore(app);
-          const userDocRef = doc(firestore, "users", user.uid);
-          await setDoc(userDocRef, { name, email });
-  
-          console.log("User registered successfully:", user);
-        } catch (error) {
-          console.error("Error registering user:", error);
-        }
+      const { email, password, name } = this.state;
+      const auth = getAuth(app);
+      try {
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+    
+        // Save user data to Firestore
+        const firestore = getFirestore(app);
+        const userDocRef = doc(firestore, "users", user.uid);
+        await setDoc(userDocRef, { name, email, picture: "" }); // Added picture field
+    
+        console.log("User registered successfully:", user);
+      } catch (error) {
+        console.error("Error registering user:", error);
       }
+    }
     
     render() {
         return (

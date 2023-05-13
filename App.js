@@ -15,7 +15,6 @@ import { legacy_createStore as createStore, applyMiddleware} from 'redux';
 import rootReducer from './redux/reducers';
 import thunk from 'redux-thunk';
 import AddScreen from './components/main/Add';
-import SaveScreen from './components/main/Save';
 import ChatsScreen from './components/main/Chats';
 import ChatScreen from './components/main/Chat';
 const store = createStore(rootReducer, applyMiddleware(thunk));
@@ -74,7 +73,6 @@ export class App extends Component {
                  <Stack.Navigator initialRouteName="Main">
                 <Stack.Screen name="Main" component={MainScreen} /> 
                 <Stack.Screen name="Add" component={AddScreen} navigation={this.props.navigation}/> 
-                <Stack.Screen name="Save" component={SaveScreen} navigation={this.props.navigation}/>
                 <Stack.Screen name="Chats" component={ChatsScreen} navigation={this.props.navigation}/>
                 <Stack.Screen name="Chat" component={ChatScreen} navigation={this.props.navigation}/>
             </Stack.Navigator>
