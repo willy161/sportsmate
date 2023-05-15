@@ -7,7 +7,7 @@ export class Login extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            email : '',
+            email : '', //nastavi prazni text
             password : '',
         }
         this.onSignIn = this.onSignIn.bind(this)
@@ -15,7 +15,7 @@ export class Login extends Component {
     onSignIn (){
         const { email, password } = this.state;
         const auth = getAuth(app);
-        signInWithEmailAndPassword(auth, email, password)
+        signInWithEmailAndPassword(auth, email, password) //firestore avtentekacija funkcija
         .then((result) => {
             console.log(result)
         })
@@ -69,10 +69,16 @@ const styles = StyleSheet.create({
     fontSize: 16
   },
   buttonContainer: {
+    padding: 10,
+    marginBottom: 10,
     backgroundColor: '#841584',
-    paddingVertical: 10,
-    borderRadius: 5,
-    alignItems: 'center'
+    borderRadius: 25,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5
   },
   buttonText: {
     color: '#ffffff',

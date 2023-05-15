@@ -18,11 +18,9 @@ import AddScreen from './components/main/Add';
 import ChatsScreen from './components/main/Chats';
 import ChatScreen from './components/main/Chat';
 const store = createStore(rootReducer, applyMiddleware(thunk));
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
-
 
 const Stack = createStackNavigator();
-
+//import vseh strani za stack navigator in avtentekacije
 export class App extends Component {
     constructor(props) {
         super(props);
@@ -44,7 +42,7 @@ export class App extends Component {
                     loaded: true,
                 });
             }
-        });
+        }); //app.js se nalozi in preveri login state
     }
     render() {
         const { loggedIn, loaded } = this.state;
@@ -74,11 +72,11 @@ export class App extends Component {
                 <Stack.Screen name="Main" component={MainScreen} /> 
                 <Stack.Screen name="Add" component={AddScreen} navigation={this.props.navigation}/> 
                 <Stack.Screen name="Chats" component={ChatsScreen} navigation={this.props.navigation}/>
-                <Stack.Screen name="Chat" component={ChatScreen} navigation={this.props.navigation}/>
+                <Stack.Screen name="Chat" component={ChatScreen} navigation={this.props.navigation}/> 
             </Stack.Navigator>
             </NavigationContainer>
             </Provider>
-        )
+        ) //stack navigator strani
   }
 }
 

@@ -13,7 +13,7 @@ export class Register extends Component {
             name : ''
         }
         this.onSignUp = this.onSignUp.bind(this)
-    }a
+    }
     async onSignUp() {
       const { email, password, name } = this.state;
       const auth = getAuth(app);
@@ -24,7 +24,7 @@ export class Register extends Component {
         // Save user data to Firestore
         const firestore = getFirestore(app);
         const userDocRef = doc(firestore, "users", user.uid);
-        await setDoc(userDocRef, { name, email, picture: "" }); // Added picture field
+        await setDoc(userDocRef, { name, email, picture: "", sports: [] }); // Added sports field
     
         console.log("User registered successfully:", user);
       } catch (error) {
@@ -59,7 +59,6 @@ export class Register extends Component {
         )
     }
 }
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -83,10 +82,16 @@ const styles = StyleSheet.create({
     fontSize: 16
   },
   buttonContainer: {
+    padding: 10,
+    marginBottom: 10,
     backgroundColor: '#841584',
-    paddingVertical: 10,
-    borderRadius: 5,
-    alignItems: 'center'
+    borderRadius: 25,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5
   },
   buttonText: {
     color: '#ffffff',

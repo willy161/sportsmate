@@ -32,26 +32,28 @@ export default function Add() {
 
   const onAddPost = async () => {
     const location = await getUserLocation();
-
+  
     const db = getFirestore(app);
     const auth = getAuth(app);
-    const postRef = collection(db, 'posts', auth.currentUser.uid, 'userPosts');
-
-    await addDoc(postRef, {
+    const postsRef = collection(db, 'posts');  // Changes made here
+  
+    await addDoc(postsRef, {
       caption,
+      uid: auth.currentUser.uid,  // Added uid field
       participants: parseInt(participants),
       dateOfActivity: dateOfActivity.toISOString(),
       sport,
       location,
       creation: serverTimestamp(),
     });
-
+  
     // clear the fields
     setCaption('');
     setParticipants('');
     setDateOfActivity(new Date());
     setSport('');
   };
+  
 
   return (
     <View style={styles.container}>
@@ -136,9 +138,13 @@ const styles = StyleSheet.create({
     padding: 10,
     marginBottom: 10,
     backgroundColor: '#841584',
-    paddingVertical: 10,
-    borderRadius: 5,
-    alignItems: 'center'
+    borderRadius: 25,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5
   },
   buttonText: {
     color: '#ffffff',

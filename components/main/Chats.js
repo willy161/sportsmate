@@ -17,21 +17,20 @@ export default function Chats({ navigation }) {
 
   const fetchChats = async () => {
     let chats = [];
-    let seenUserIds = new Set(); // To keep track of users whose messages have been added
+    let seenUserIds = new Set(); // Set, ki shrani že prikazane pogovore
   
-    const q = query(messagesRef, orderBy('createdAt', 'desc')); // Order by timestamp in descending order to get the latest messages first
+    const q = query(messagesRef, orderBy('createdAt', 'desc'));
     const querySnapshot = await getDocs(q);
   
     for (let doc of querySnapshot.docs) {
       let chat = doc.data();
-      let otherUid = chat.userCombo.split('-').find(id => id !== userUid); // Get the other user's id
+      let otherUid = chat.userCombo.split('-').find(id => id !== userUid); //dobi id sogovorca
       
-      // Only include the latest message from each user, and exclude messages where the uid of the doc is the current user's uid
       if (chat.userCombo && chat.userCombo.includes(userUid) && !seenUserIds.has(otherUid) && chat.uid !== userUid) {
         chat.id = doc.id;
-        chat.userIds = chat.userCombo.split('-');  // split the userCombo into an array of userIds
+        chat.userIds = chat.userCombo.split('-');  
         chats.push(chat);
-        seenUserIds.add(otherUid); // Mark this user as seen
+        seenUserIds.add(otherUid); //označi viden govor
       }
     }
   
@@ -47,7 +46,7 @@ export default function Chats({ navigation }) {
         <FlatList
           data={chats}
           renderItem={({ item }) => {
-            let otherUid = item.userIds.find(id => id !== userUid); // Get the other user's id
+            let otherUid = item.userIds.find(id => id !== userUid); //najdi id drugega userja
             return (
               <View style={styles.chatContainer}>
                 <Text style={styles.chatText}>{item.userName || 'No users'}</Text>
@@ -89,9 +88,13 @@ const styles = StyleSheet.create({
     padding: 10,
     marginBottom: 10,
     backgroundColor: '#841584',
-    paddingVertical: 10,
-    borderRadius: 5,
-    alignItems: 'center'
+    borderRadius: 25,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5
   },
   buttonText: {
     color: '#ffffff',

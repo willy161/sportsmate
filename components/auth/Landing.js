@@ -30,11 +30,16 @@ const styles = StyleSheet.create({
     marginBottom: 40 
   },
   buttonContainer: {
-    marginVertical: 10,
+    padding: 10, // padding for the button
+    marginBottom: 10,
     backgroundColor: '#841584', // background color for the button
-    paddingVertical: 10, // padding for the button
-    borderRadius: 5, // rounded corners
-    alignItems: 'center' // center the text inside the button
+    borderRadius: 25, // rounded corners
+    alignItems: 'center', // center the text inside the button
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5
   },
   buttonText: {
     color: '#ffffff', // text color

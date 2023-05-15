@@ -50,7 +50,7 @@ function degreesToRadians(degrees) {
   return degrees * (Math.PI / 180);
 }
 
-// Calculate distance between two coordinates in kilometers
+// Izračunaj pot med točkama glede na koordinatah v km
 function calculateDistance(lat1, lon1, lat2, lon2) {
   const earthRadiusKm = 6371;
 

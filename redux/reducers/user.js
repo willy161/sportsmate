@@ -24,7 +24,7 @@ export const user = (state = initialState, action) => {
             }
             default:
         {
-        return state
+        return state //posodobi state v primeri spremembe
 
     }
         }
